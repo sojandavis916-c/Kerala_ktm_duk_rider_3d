@@ -1,116 +1,43 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Kerala KTM Duke Rider 390</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#09251b;color:white;text-align:center;font-family:Arial;overflow:hidden}
-h2{color:#ff7100;margin:12px 0}
-#info{display:flex;justify-content:space-around;font-size:19px;padding:8px}
-canvas{display:block;width:100%;height:65vh;background:#57984b}
-.controls{display:flex;justify-content:space-around;padding:10px}
-button{background:#ff7100;color:white;border:0;border-radius:18px;padding:18px;font-size:25px;font-weight:bold;touch-action:none}
-#start{font-size:20px;padding:18px 35px;margin:5px}
-</style>
-</head>
-<body>
-<h2>🏍️ KERALA KTM DUKE 390</h2>
-<div id="info"><span>Score: <b id="score">0</b></span><span>Speed: <b id="speed">0</b></span></div>
-<canvas id="game"></canvas>
-<div class="controls">
-<button id="left">⬅️</button>
-<button id="nitro">⚡</button>
-<button id="right">➡️</button>
-</div>
-<button id="start">START / RESTART</button>
-<script>
-const c=document.getElementById("game"),ctx=c.getContext("2d");
-let W,H,player=0,score=0,speed=0,playing=false,offset=0,traffic=[];
-function resize(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
-window.addEventListener("resize",resize);resize();
-
-function road(){
-ctx.fillStyle="#57984b";ctx.fillRect(0,0,W,H);
-for(let y=-100;y<H+100;y+=110){
-let yy=(y+offset)% (H+110);
-palm(25,yy);palm(W-25,yy+35);
-}
-ctx.fillStyle="#444";ctx.beginPath();
-ctx.moveTo(W*.34,0);ctx.lineTo(W*.66,0);
-ctx.lineTo(W*.94,H);ctx.lineTo(W*.06,H);ctx.fill();
-ctx.strokeStyle="#ffdc40";ctx.lineWidth=5;
-ctx.beginPath();ctx.moveTo(W*.34,0);ctx.lineTo(W*.06,H);
-ctx.moveTo(W*.66,0);ctx.lineTo(W*.94,H);ctx.stroke();
-ctx.strokeStyle="white";ctx.lineWidth=5;ctx.setLineDash([35,25]);
-ctx.lineDashOffset=-offset;ctx.beginPath();
-ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
-ctx.setLineDash([]);
-}
-function palm(x,y){
-ctx.save();ctx.translate(x,y);
-ctx.strokeStyle="#754522";ctx.lineWidth=7;
-ctx.beginPath();ctx.moveTo(0,30);ctx.quadraticCurveTo(8,0,0,-25);ctx.stroke();
-ctx.strokeStyle="#07552b";ctx.lineWidth=5;
-for(let a=-2;a<=2;a++){
-ctx.beginPath();ctx.moveTo(0,-25);
-ctx.quadraticCurveTo(a*18,-50,a*32,-35);ctx.stroke();
-}
-ctx.fillStyle="#754522";ctx.beginPath();ctx.arc(0,-25,5,0,7);ctx.fill();
-ctx.restore();
-}
-function bike(x,y){
-ctx.save();ctx.translate(x,y);
-ctx.fillStyle="#080808";
-ctx.beginPath();ctx.ellipse(-14,28,10,25,0,0,7);ctx.ellipse(14,28,10,25,0,0,7);ctx.fill();
-ctx.fillStyle="#ff7100";
-ctx.beginPath();ctx.moveTo(-12,-20);ctx.lineTo(12,-20);ctx.lineTo(23,12);ctx.lineTo(12,35);ctx.lineTo(-12,35);ctx.lineTo(-23,12);ctx.closePath();ctx.fill();
-ctx.fillStyle="#111";ctx.fillRect(-22,-23,44,6);
-ctx.fillStyle="#ffe9a0";ctx.fillRect(-5,-30,10,6);
-ctx.fillStyle="#222";ctx.fillRect(-8,-12,16,15);
-ctx.restore();
-}
 function bus(x,y){
-ctx.save();ctx.translate(x,y);
-ctx.fillStyle="#092b83";ctx.fillRect(-28,-48,56,95);
-ctx.fillStyle="#d71920";ctx.fillRect(-28,-48,56,20);
-ctx.fillStyle="#bdeaff";ctx.fillRect(-22,-22,44,34);
-ctx.fillStyle="#111";ctx.fillRect(-25,22,50,12);
-ctx.fillStyle="#fff";ctx.font="bold 9px Arial";ctx.textAlign="center";ctx.fillText("KSRTC",-0,8);
-ctx.fillStyle="#111";ctx.fillRect(-30,35,8,15);ctx.fillRect(22,35,8,15);
+ctx.save();
+ctx.translate(x,y);
+
+// Original KSRTC bus body
+ctx.fillStyle="#073b91";
+ctx.fillRect(-29,-48,58,100);
+
+// Red upper section
+ctx.fillStyle="#d71920";
+ctx.fillRect(-29,-48,58,22);
+
+// Front windshield
+ctx.fillStyle="#b9e8f5";
+ctx.fillRect(-22,-21,44,28);
+
+// Windshield divider
+ctx.fillStyle="#17334b";
+ctx.fillRect(-2,-21,4,28);
+
+// Headlights
+ctx.fillStyle="#fff4b0";
+ctx.fillRect(-24,13,9,8);
+ctx.fillRect(15,13,9,8);
+
+// Bumper
+ctx.fillStyle="#222";
+ctx.fillRect(-30,35,60,10);
+
+// KSRTC name
+ctx.fillStyle="white";
+ctx.font="bold 10px Arial";
+ctx.textAlign="center";
+ctx.fillText("KSRTC",0,5);
+
+// Wheels
+ctx.fillStyle="#111";
+ctx.fillRect(-32,-5,5,20);
+ctx.fillRect(27,-5,5,20);
+
 ctx.restore();
 }
-function car(x,y){
-ctx.fillStyle="#eee";ctx.fillRect(x-15,y-20,30,40);
-ctx.fillStyle="#333";ctx.fillRect(x-11,y-13,22,12);
-}
-function update(){
-if(!playing)return;
-score+=1;speed=70+(document.nitro?45:0);
-offset=(offset+speed/12)% (H+110);
-if(Math.random()<.018)traffic.push({x:W/2+(Math.random()-.5)*W*.38,y:-50,bus:Math.random()<.4});
-traffic.forEach(t=>t.y+=speed/9);
-traffic=traffic.filter(t=>t.y<H+80);
-document.getElementById("score").textContent=score;
-document.getElementById("speed").textContent=speed;
-draw();requestAnimationFrame(update);
-}
-function draw(){
-road();
-traffic.forEach(t=>t.bus?bus(t.x,t.y):car(t.x,t.y));
-bike(W/2+player*W*.25,H*.78);
-}
-function move(d){player=Math.max(-1,Math.min(1,player+d*.12));draw()}
-document.getElementById("left").onpointerdown=()=>move(-1);
-document.getElementById("right").onpointerdown=()=>move(1);
-document.getElementById("nitro").onpointerdown=()=>{document.nitro=true};
-document.getElementById("nitro").onpointerup=()=>{document.nitro=false};
-document.getElementById("start").onclick=()=>{
-score=0;player=0;traffic=[];playing=true;update();
-};
-draw();
-</script>
-</body>
-</html>
