@@ -3,24 +3,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kerala KTM Duke Rider</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Kerala KTM Duke Rider 390</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10251b;color:white;text-align:center;font-family:Arial}
-h2{color:#ff7100;margin:10px}
-#info{display:flex;justify-content:space-around;padding:8px}
-canvas{width:100%;height:65vh;display:block;background:#57984b}
+body{margin:0;background:#09251b;color:white;text-align:center;font-family:Arial;overflow:hidden}
+h2{color:#ff7100;margin:12px 0}
+#info{display:flex;justify-content:space-around;font-size:19px;padding:8px}
+canvas{display:block;width:100%;height:65vh;background:#57984b}
 .controls{display:flex;justify-content:space-around;padding:10px}
-button{background:#ff7100;color:white;border:0;border-radius:12px;padding:14px 20px;font-size:19px;font-weight:bold;touch-action:none}
+button{background:#ff7100;color:white;border:0;border-radius:18px;padding:18px;font-size:25px;font-weight:bold;touch-action:none}
+#start{font-size:20px;padding:18px 35px;margin:5px}
 </style>
 </head>
 <body>
-<h2>🏍️ KERALA KTM DUKE RIDER</h2>
-<div id="info">
-<span>Score: <b id="score">0</b></span>
-<span>Speed: <b id="speed">0</b></span>
-</div>
+<h2>🏍️ KERALA KTM DUKE 390</h2>
+<div id="info"><span>Score: <b id="score">0</b></span><span>Speed: <b id="speed">0</b></span></div>
 <canvas id="game"></canvas>
 <div class="controls">
 <button id="left">⬅️</button>
@@ -30,133 +28,89 @@ button{background:#ff7100;color:white;border:0;border-radius:12px;padding:14px 2
 <button id="start">START / RESTART</button>
 <script>
 const c=document.getElementById("game"),ctx=c.getContext("2d");
-let W,H,player=0,score=0,traffic=[],offset=0,running=false,nitro=false;
-function resize(){
- let d=devicePixelRatio||1;
- W=c.clientWidth;H=c.clientHeight;
- c.width=W*d;c.height=H*d;
- ctx.setTransform(d,0,0,d,0,0);
-}
-onresize=resize;resize();
+let W,H,player=0,score=0,speed=0,playing=false,offset=0,traffic=[];
+function resize(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+window.addEventListener("resize",resize);resize();
 
-function palm(x,y,s){
- ctx.save();ctx.translate(x,y);ctx.scale(s,s);
- ctx.strokeStyle="#704323";ctx.lineWidth=6;
- ctx.beginPath();ctx.moveTo(0,15);ctx.quadraticCurveTo(8,-15,0,-45);ctx.stroke();
- ctx.strokeStyle="#17632d";ctx.lineWidth=5;
- for(let i=0;i<7;i++){
-  ctx.beginPath();ctx.moveTo(0,-45);
-  ctx.quadraticCurveTo((i-3)*13,-65,(i-3)*19,-48);
-  ctx.stroke();
- }
- ctx.fillStyle="#8b5a2b";
- ctx.beginPath();ctx.arc(0,-44,5,0,7);ctx.fill();
- ctx.restore();
+function road(){
+ctx.fillStyle="#57984b";ctx.fillRect(0,0,W,H);
+for(let y=-100;y<H+100;y+=110){
+let yy=(y+offset)% (H+110);
+palm(25,yy);palm(W-25,yy+35);
 }
-function drawRoad(){
- ctx.fillStyle="#4e984b";ctx.fillRect(0,0,W,H);
- for(let y=-50;y<H+60;y+=95){
-  let yy=(y+offset*.7)%(H+95);
-  palm(W*.08,yy,0.75);palm(W*.91,yy+25,0.8);
-  ctx.fillStyle="#e5c995";
-  ctx.fillRect(0,yy+42,W*.22,4);
-  ctx.fillRect(W*.78,yy+42,W*.22,4);
- }
- ctx.fillStyle="#444";
- ctx.beginPath();
- ctx.moveTo(W*.34,0);ctx.lineTo(W*.66,0);
- ctx.lineTo(W*.94,H);ctx.lineTo(W*.06,H);
- ctx.closePath();ctx.fill();
- ctx.strokeStyle="#f6dc59";ctx.lineWidth=4;
- ctx.beginPath();ctx.moveTo(W*.34,0);ctx.lineTo(W*.06,H);ctx.stroke();
- ctx.beginPath();ctx.moveTo(W*.66,0);ctx.lineTo(W*.94,H);ctx.stroke();
- ctx.strokeStyle="white";ctx.lineWidth=4;ctx.setLineDash([30,25]);
- ctx.lineDashOffset=-offset;
- ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
- ctx.setLineDash([]);
+ctx.fillStyle="#444";ctx.beginPath();
+ctx.moveTo(W*.34,0);ctx.lineTo(W*.66,0);
+ctx.lineTo(W*.94,H);ctx.lineTo(W*.06,H);ctx.fill();
+ctx.strokeStyle="#ffdc40";ctx.lineWidth=5;
+ctx.beginPath();ctx.moveTo(W*.34,0);ctx.lineTo(W*.06,H);
+ctx.moveTo(W*.66,0);ctx.lineTo(W*.94,H);ctx.stroke();
+ctx.strokeStyle="white";ctx.lineWidth=5;ctx.setLineDash([35,25]);
+ctx.lineDashOffset=-offset;ctx.beginPath();
+ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+ctx.setLineDash([]);
+}
+function palm(x,y){
+ctx.save();ctx.translate(x,y);
+ctx.strokeStyle="#754522";ctx.lineWidth=7;
+ctx.beginPath();ctx.moveTo(0,30);ctx.quadraticCurveTo(8,0,0,-25);ctx.stroke();
+ctx.strokeStyle="#07552b";ctx.lineWidth=5;
+for(let a=-2;a<=2;a++){
+ctx.beginPath();ctx.moveTo(0,-25);
+ctx.quadraticCurveTo(a*18,-50,a*32,-35);ctx.stroke();
+}
+ctx.fillStyle="#754522";ctx.beginPath();ctx.arc(0,-25,5,0,7);ctx.fill();
+ctx.restore();
 }
 function bike(x,y){
- ctx.save();ctx.translate(x,y);
- ctx.fillStyle="#111";
- ctx.beginPath();ctx.ellipse(-13,15,8,18,0,0,7);ctx.fill();
- ctx.beginPath();ctx.ellipse(13,15,8,18,0,0,7);ctx.fill();
- ctx.fillStyle="#ff7100";
- ctx.beginPath();ctx.moveTo(-15,-8);ctx.lineTo(-10,-25);
- ctx.lineTo(10,-25);ctx.lineTo(16,-8);ctx.lineTo(9,15);
- ctx.lineTo(-9,15);ctx.closePath();ctx.fill();
- ctx.fillStyle="#eee";ctx.fillRect(-5,-29,10,5);
- ctx.fillStyle="#222";ctx.fillRect(-4,-18,8,15);
- ctx.strokeStyle="#111";ctx.lineWidth=4;
- ctx.beginPath();ctx.moveTo(-18,-20);ctx.lineTo(18,-20);ctx.stroke();
- ctx.restore();
+ctx.save();ctx.translate(x,y);
+ctx.fillStyle="#080808";
+ctx.beginPath();ctx.ellipse(-14,28,10,25,0,0,7);ctx.ellipse(14,28,10,25,0,0,7);ctx.fill();
+ctx.fillStyle="#ff7100";
+ctx.beginPath();ctx.moveTo(-12,-20);ctx.lineTo(12,-20);ctx.lineTo(23,12);ctx.lineTo(12,35);ctx.lineTo(-12,35);ctx.lineTo(-23,12);ctx.closePath();ctx.fill();
+ctx.fillStyle="#111";ctx.fillRect(-22,-23,44,6);
+ctx.fillStyle="#ffe9a0";ctx.fillRect(-5,-30,10,6);
+ctx.fillStyle="#222";ctx.fillRect(-8,-12,16,15);
+ctx.restore();
 }
-function vehicle(t){
- let x=W/2+t.lane*W+(t.y/H)*t.lane*W*.35;
- if(t.bus){
-  ctx.fillStyle="#f4c900";ctx.fillRect(x-23,t.y-38,46,76);
-  ctx.fillStyle="#d71920";ctx.fillRect(x-20,t.y-35,40,12);
-  ctx.fillStyle="#bceaff";ctx.fillRect(x-17,t.y-18,34,22);
-  ctx.fillStyle="#222";ctx.fillRect(x-17,t.y+12,34,15);
-  ctx.fillStyle="white";ctx.font="bold 7px Arial";
-  ctx.textAlign="center";ctx.fillText("KSRTC",x,t.y+4);
- }else{
-  ctx.fillStyle="#111";ctx.fillRect(x-17,t.y-20,34,48);
-  ctx.fillStyle=t.color;ctx.fillRect(x-14,t.y-25,28,48);
-  ctx.fillStyle="#bceaff";ctx.fillRect(x-10,t.y-18,20,10);
-  ctx.fillStyle="white";ctx.fillRect(x-11,t.y+15,7,5);
-  ctx.fillRect(x+4,t.y+15,7,5);
- }
+function bus(x,y){
+ctx.save();ctx.translate(x,y);
+ctx.fillStyle="#092b83";ctx.fillRect(-28,-48,56,95);
+ctx.fillStyle="#d71920";ctx.fillRect(-28,-48,56,20);
+ctx.fillStyle="#bdeaff";ctx.fillRect(-22,-22,44,34);
+ctx.fillStyle="#111";ctx.fillRect(-25,22,50,12);
+ctx.fillStyle="#fff";ctx.font="bold 9px Arial";ctx.textAlign="center";ctx.fillText("KSRTC",-0,8);
+ctx.fillStyle="#111";ctx.fillRect(-30,35,8,15);ctx.fillRect(22,35,8,15);
+ctx.restore();
 }
-function draw(){
- drawRoad();
- traffic.forEach(vehicle);
- bike(W/2+player*W*.25,H*.78);
- if(!running){
-  ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(0,0,W,H);
-  ctx.fillStyle="white";ctx.textAlign="center";
-  ctx.font="bold 23px Arial";ctx.fillText("KERALA ROAD RACE",W/2,H*.43);
-  ctx.font="16px Arial";ctx.fillText("Press START to ride",W/2,H*.50);
- }
+function car(x,y){
+ctx.fillStyle="#eee";ctx.fillRect(x-15,y-20,30,40);
+ctx.fillStyle="#333";ctx.fillRect(x-11,y-13,22,12);
 }
 function update(){
- if(running){
-  let speed=nitro?12:7;
-  offset+=speed;score++;
-  document.getElementById("score").textContent=score;
-  document.getElementById("speed").textContent=speed*10;
-  if(Math.random()<.022)traffic.push({
-   lane:Math.random()>.5?-.24:.24,y:-70,
-   bus:Math.random()<.25,
-   color:["#e33","#2299dd","#eee","#f5c542"][Math.floor(Math.random()*4)]
-  });
-  traffic.forEach(t=>t.y+=speed*1.5);
-  traffic=traffic.filter(t=>t.y<H+80);
-  for(let t of traffic){
-   let x=W/2+t.lane*W+(t.y/H)*t.lane*W*.35;
-   if(t.y>H*.69&&t.y<H*.86&&Math.abs(x-(W/2+player*W*.25))<36){
-    running=false;
-    alert("Race Over! Score: "+score);
-    break;
-   }
-  }
- }
- draw();requestAnimationFrame(update);
+if(!playing)return;
+score+=1;speed=70+(document.nitro?45:0);
+offset=(offset+speed/12)% (H+110);
+if(Math.random()<.018)traffic.push({x:W/2+(Math.random()-.5)*W*.38,y:-50,bus:Math.random()<.4});
+traffic.forEach(t=>t.y+=speed/9);
+traffic=traffic.filter(t=>t.y<H+80);
+document.getElementById("score").textContent=score;
+document.getElementById("speed").textContent=speed;
+draw();requestAnimationFrame(update);
 }
-function left(){player=Math.max(-1,player-.18)}
-function right(){player=Math.min(1,player+.18)}
-function hold(id,fn){
- let b=document.getElementById(id);
- b.onpointerdown=e=>{e.preventDefault();fn(true)};
- b.onpointerup=()=>fn(false);
- b.onpointerleave=()=>fn(false);
+function draw(){
+road();
+traffic.forEach(t=>t.bus?bus(t.x,t.y):car(t.x,t.y));
+bike(W/2+player*W*.25,H*.78);
 }
-hold("left",v=>{if(v)left()});
-hold("right",v=>{if(v)right()});
-hold("nitro",v=>nitro=v);
+function move(d){player=Math.max(-1,Math.min(1,player+d*.12));draw()}
+document.getElementById("left").onpointerdown=()=>move(-1);
+document.getElementById("right").onpointerdown=()=>move(1);
+document.getElementById("nitro").onpointerdown=()=>{document.nitro=true};
+document.getElementById("nitro").onpointerup=()=>{document.nitro=false};
 document.getElementById("start").onclick=()=>{
- score=0;player=0;traffic=[];running=true;
+score=0;player=0;traffic=[];playing=true;update();
 };
-update();
+draw();
 </script>
 </body>
 </html>
